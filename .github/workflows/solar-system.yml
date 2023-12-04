@@ -101,3 +101,22 @@ jobs:
             }}
           INGRESS_IP: '${{ env.INGRESS_IP }}'
       - run: cat kubernetes/development/*.yaml
+  reports-minio:
+    needs: code-coverage
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: Code-Coverage-Result
+          path: coverage
+      - uses: mamal72/minio-perfect-deploy-action@main
+        with:
+          endpoint: >-
+            https://0b0b8b43-0e0e-4957-a78d-d83f446495ff-10-244-4-96-31271.spch.r.killercoda.com/
+          access_key: minioadmin
+          secret_key: minioadmin
+          bucket: test-reports-bucket
+          source_dir: coverage
+          target_dir: /
+
